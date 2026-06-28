@@ -97,3 +97,67 @@ add name=auto-backup source="
 /system scheduler
 add name=weekly-backup-scheduler interval=7d start-date=jun/28/2026 start-time=03:00:00 on-event=auto-backup
 ```
+
+---
+
+## 4. Hardcore Production Scripts & Routing Blueprints (RouterOS v7)
+
+### A. Cloudflare Dynamic DNS (v7 http-method PUT API)
+Automate IP sync for `home.thiraphat.work` domain behind Cloudflare:
+```routeros
+/system script
+add name=cloudflare-ddns policy=read,write,policy,test,sniff source="
+  :local CFToken \"CLOUDFLARE_API_TOKEN\"
+  :local CFZone \"CLOUDFLARE_ZONE_ID\"
+  :local CFRule \"CLOUDFLARE_RECORD_ID\"
+  :local Domain \"home.thiraphat.work\"
+  
+  :local WANInterface \"ether1\"
+  :local CurrentIP [/ip address get [find interface=\$WANInterface] address]
+  # Strip subnet mask
+  :set CurrentIP [:pick \$CurrentIP 0 [:find \$CurrentIP \"/\"]]
+  
+  :local ResolveIP [:resolve \$Domain]
+  
+  :if (\$CurrentIP != \$ResolveIP) do={
+    :log info \"CF DDNS: IP mismatch. Updating \$Domain from \$ResolveIP to \$CurrentIP...\"
+    /tool fetch http-method=put \
+      url=\"https://api.cloudflare.com/client/v4/zones/\$CFZone/dns_records/\$CFRule\" \
+      http-header-field=\"Authorization: Bearer \$CFToken,Content-Type: application/json\" \
+      http-data=\"{\\\"type\\\":\\\"A\\\",\\\"name\\\":\\\"\$Domain\\\",\\\"content\\\":\\\"\$CurrentIP\\\",\\\"ttl\\\":120}\" \
+      output=none
+  } else={
+    :log info \"CF DDNS: IP is up to date (\$CurrentIP)\"
+  }
+"
+```
+
+### B. Pure Zero-Script Recursive Routing Failover
+Configure multi-hop recursive link verification via static host scopes. This bypasses flapping Netwatch scripts:
+```routeros
+# 1. Virtual host hops via separate ISP gateways
+/ip route
+add dst-address=8.8.8.8/32 gateway=192.168.1.1 scope=10 check-gateway=ping comment="Link-1 virtual tester"
+add dst-address=1.1.1.1/32 gateway=192.168.2.1 scope=10 check-gateway=ping comment="Link-2 virtual tester"
+
+# 2. Main default routes referencing target scopes
+add dst-address=0.0.0.0/0 gateway=8.8.8.8 distance=1 target-scope=30 check-gateway=ping comment="Primary Gateway"
+add dst-address=0.0.0.0/0 gateway=1.1.1.1 distance=2 target-scope=30 check-gateway=ping comment="Failover Gateway"
+```
+
+### C. Webhook Discord Notifications
+Directly dispatch status alerts to Discord utilizing RouterOS v7 POST payload fetch:
+```routeros
+/system script
+add name=discord-notify policy=read,write,policy,test source="
+  :local webhookUrl \"DISCORD_WEBHOOK_URL\"
+  :local msg \"[Mikrotik Alert] Router \$[/system identity get name] backup completed at \$[/system clock get date] \$[/system clock get time]\"
+  
+  /tool fetch http-method=post \
+    url=\$webhookUrl \
+    http-header-field=\"Content-Type: application/json\" \
+    http-data=\"{\\\"content\\\":\\\"\$msg\\\"}\" \
+    output=none
+  :log info \"Discord notification sent.\"
+"
+```
