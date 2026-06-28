@@ -76,3 +76,10 @@ Any configuration edits made by the agent locally in the active rule directories
   ```bash
   ./sync.sh
   ```
+
+---
+
+## 🏷 Releases & Versioning
+
+- **v1.0.0 (Stable Configuration)**: Packages all 800+ community and environment-specific skills into `skills.tar.gz` for clean Git tracking and instant TUI bootstrap.
+- To publish new releases, push a new git tag (`git tag vX.Y.Z && git push origin vX.Y.Z`) and draft the release on the GitHub web portal.
