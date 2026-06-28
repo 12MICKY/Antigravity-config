@@ -2,7 +2,7 @@
 
 This repository houses the configuration, memory, system instructions, and custom TUI statusline utilities for **Google Antigravity (`agy`)** in Thiraphat's development environment.
 
-## 🗂 Repository Structure
+## Repository Structure
 
 - **`AGENTS.md`**: Custom workspace rules containing environment profiles, identity constraints, technical coding styles, and behavior directives.
 - **`statusline-command.sh`**: A highly optimized terminal status line script designed for the `agy` CLI that outputs user/host, model, active repository, git branch, context usage percentage, and weekly credit quota.
@@ -13,7 +13,7 @@ This repository houses the configuration, memory, system instructions, and custo
 
 ---
 
-## ⚡ Setup & Installation
+## Setup & Installation
 
 To deploy this configuration on a new workstation or restore the environment, clone this repository locally and run the setup script:
 
@@ -30,7 +30,7 @@ cd ~/antigravity-config
 
 ---
 
-## 🖥 Statusline Layout
+## Statusline Layout
 
 The custom statusline runs on every CLI action loop. It outputs:
 
@@ -46,6 +46,6 @@ The custom statusline runs on every CLI action loop. It outputs:
 
 ---
 
-## 🔄 Auto-Sync (Linux Servers only)
+## Auto-Sync (Linux Servers only)
 
 Any local changes made by the agent to rules (`~/.agents/AGENTS.md`) or the statusline script will be automatically staged, committed, and pushed back to this GitHub repository. This is powered by user-level systemd path units (`sync.path` + `sync.service`).
