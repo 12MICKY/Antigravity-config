@@ -4,9 +4,12 @@ set -e
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 AGENTS_DST="$HOME/.agents"
 
-echo "[1/3] AGENTS.md"
+echo "[1/3] AGENTS.md and skills"
 mkdir -p "$AGENTS_DST"
 cp "$REPO_DIR/AGENTS.md" "$AGENTS_DST/AGENTS.md"
+if [ -d "$REPO_DIR/skills" ]; then
+  cp -R "$REPO_DIR/skills" "$AGENTS_DST/"
+fi
 
 echo "[2/3] statusline configuration"
 # Ensure statusline command is executable
