@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.thiraphat.antigravity-sync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/thiraphatsrichit/antigravity-config/sync.sh</string>
+    </array>
+    <key>WatchPaths</key>
+    <array>
+        <string>/Users/thiraphatsrichit/.agents/AGENTS.md</string>
+        <string>/Users/thiraphatsrichit/antigravity-config/statusline-command.sh</string>
+    </array>
+    <key>StandardOutPath</key>
+    <string>/Users/thiraphatsrichit/.gemini/antigravity-cli/scratch/launchd-sync.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/thiraphatsrichit/.gemini/antigravity-cli/scratch/launchd-sync.err</string>
+</dict>
+</plist>

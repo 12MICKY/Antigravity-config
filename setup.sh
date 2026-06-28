@@ -90,9 +90,26 @@ else
     log_warn "statusline-command.sh not found. Skipping statusline config."
 fi
 
-# Step 3: Register Systemd Auto-Sync Watcher
-log_info "Checking for Systemd availability..."
-if command -v systemctl >/dev/null 2>&1; then
+# Step 3: Register Auto-Sync Watcher (Systemd for Linux, Launchd for macOS)
+log_info "Registering file watcher daemon for auto-sync..."
+OS_TYPE="$(uname -s)"
+
+if [ "$OS_TYPE" = "Darwin" ]; then
+    LAUNCHD_DST="$HOME/Library/LaunchAgents"
+    mkdir -p "$LAUNCHD_DST"
+    PLIST_FILE="$LAUNCHD_DST/com.thiraphat.antigravity-sync.plist"
+    
+    # Unload existing agent if loaded
+    launchctl unload "$PLIST_FILE" 2>/dev/null || true
+    
+    # Copy and load new agent
+    cp "$REPO_DIR/systemd/com.thiraphat.antigravity-sync.plist" "$PLIST_FILE"
+    chmod 644 "$PLIST_FILE"
+    
+    launchctl load "$PLIST_FILE"
+    log_success "macOS Launchd auto-sync agent registered and loaded successfully."
+    
+elif command -v systemctl >/dev/null 2>&1; then
     SYSTEMD_DST="$HOME/.config/systemd/user"
     mkdir -p "$SYSTEMD_DST"
     
@@ -101,10 +118,9 @@ if command -v systemctl >/dev/null 2>&1; then
     
     systemctl --user daemon-reload
     systemctl --user enable --now antigravity-sync.path
-    log_success "Systemd auto-sync watcher registered and enabled successfully."
+    log_success "Linux Systemd auto-sync watcher registered and enabled successfully."
 else
-    log_warn "systemctl not found. Auto-sync daemon registration skipped (macOS/non-systemd environment)."
-    log_info "To sync manually on macOS, execute: ./sync.sh"
+    log_warn "Neither Launchd (macOS) nor Systemd (Linux) daemon manager configured. Skipping auto-sync registration."
 fi
 
 printf "\n${GREEN}${BOLD}Bootstrap completed successfully!${NC}\n"

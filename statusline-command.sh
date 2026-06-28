@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "Dependency error: jq not found"
+  exit 127
+fi
+
 input=$(cat)
 
 R="\033[0m"
