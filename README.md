@@ -83,6 +83,18 @@ All skills are compiled and packaged directly inside the compressed `skills.tar.
 
 ---
 
+## Reference Materials & Learning Logs
+
+This setup is grounded in official, enterprise-grade networking and system administration training materials:
+
+| Document / Training Guide | Core Implementations & Blueprints | Associated Skills |
+|---|---|---|
+| [MikroTik RouterOS Documentation](https://manual.mikrotik.com/) | <ul><li>Zero-Script Recursive Routing Failover via virtual target hops</li><li>Cloudflare Dynamic DNS API PUT updates using `/tool fetch`</li><li>Automated Discord webhook alerts</li><li>Bridge VLAN Filtering (Hardware Offloaded)</li></ul> | `network-mikrotik`, `network-engineer` |
+| [Ubiquiti UEWA Training Guide](https://dl.ubnt.com/guides/training/courses/UEWA_Training_Guide_V2.1.pdf) | <ul><li>Layer-3 AP Adoption via DHCP Option 43 and DNS `unifi` resolution</li><li>Manual SSH `set-inform` binding flow</li><li>Minimum RSSI `-75 dBm` soft-kick threshold for client roaming</li><li>Airtime Fairness and Band Steering optimization</li></ul> | `network-unifi`, `network-engineer` |
+| [Proxmox VE Admin Guide](https://pve.proxmox.com/pve-docs/pve-admin-guide.html) | <ul><li>PBS CT 104 datastore backup scheduling and prune policies</li><li>Watchdog High Availability group definitions</li><li>LXC unprivileged mapping and mount points</li></ul> | `proxmox-datacenter`, `proxmox-manager`, `proxmox-backup`, `proxmox-cli` |
+
+---
+
 ## Releases & Versioning
 
 - **v1.0.0 (Stable Configuration)**: Packages all 800+ community and environment-specific skills into `skills.tar.gz` for clean Git tracking and instant TUI bootstrap.
