@@ -1,24 +1,77 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+# -----------------------------------------------------------------------------
+# Google Antigravity Environment Bootstrap & Setup
+# Optimized for macOS (Darwin) and Linux systems
+# -----------------------------------------------------------------------------
+
+set -euo pipefail
+
+# ANSI color escape codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+BOLD='\033[1m'
+
+# Logging helpers
+log_info()    { printf "${BLUE}[INFO]${NC} %s\n" "$1"; }
+log_success() { printf "${GREEN}[SUCCESS]${NC} %s\n" "$1"; }
+log_warn()    { printf "${YELLOW}[WARN]${NC} %s\n" "$1"; }
+log_error()   { printf "${RED}[ERROR]${NC} %s\n" "$1" >&2; }
+
+# Print Banner
+printf "${CYAN}${BOLD}"
+printf "===================================================\n"
+printf "        ANTIGRAVITY ENVIRONMENT BOOTSTRAP         \n"
+printf "===================================================\n"
+printf "${NC}\n"
+
+# Verify dependencies
+for cmd in git python3; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        log_error "Missing required dependency: $cmd"
+        exit 1
+    fi
+done
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENTS_DST="$HOME/.agents"
+SETTINGS_PATH="$HOME/.gemini/antigravity-cli/settings.json"
 
-echo "[1/3] AGENTS.md and skills"
+# Step 1: Copy agents instructions and skills
+log_info "Synchronizing AGENTS.md rules and active skills..."
 mkdir -p "$AGENTS_DST"
-cp "$REPO_DIR/AGENTS.md" "$AGENTS_DST/AGENTS.md"
-if [ -d "$REPO_DIR/skills" ]; then
-  cp -R "$REPO_DIR/skills" "$AGENTS_DST/"
+
+if [ -f "$REPO_DIR/AGENTS.md" ]; then
+    cp "$REPO_DIR/AGENTS.md" "$AGENTS_DST/AGENTS.md"
+    log_success "Workspace rules (AGENTS.md) copied to $AGENTS_DST"
+else
+    log_error "AGENTS.md not found in repository root!"
+    exit 1
 fi
 
-echo "[2/3] statusline configuration"
-# Ensure statusline command is executable
-chmod +x "$REPO_DIR/statusline-command.sh"
+if [ -d "$REPO_DIR/skills" ]; then
+    rm -rf "$AGENTS_DST/skills"
+    cp -R "$REPO_DIR/skills" "$AGENTS_DST/"
+    log_success "Custom skills synchronized to $AGENTS_DST/skills"
+fi
 
-# Update settings.json to point to the repo statusline-command.sh
-python3 -c "
+# Step 2: Configure TUI Statusline
+log_info "Configuring active TUI Statusline command..."
+STATUSLINE_SCRIPT="$REPO_DIR/statusline-command.sh"
+
+if [ -f "$STATUSLINE_SCRIPT" ]; then
+    chmod +x "$STATUSLINE_SCRIPT"
+    
+    python3 -c "
 import json
-path = '$HOME/.gemini/antigravity-cli/settings.json'
+import os
+path = os.path.expanduser('$SETTINGS_PATH')
+os.makedirs(os.path.dirname(path), exist_ok=True)
 try:
     with open(path, 'r') as f:
         data = json.load(f)
@@ -26,22 +79,32 @@ except Exception:
     data = {}
 data['statusLine'] = {
     'type': 'command',
-    'command': '$REPO_DIR/statusline-command.sh',
+    'command': '$STATUSLINE_SCRIPT',
     'enabled': True
 }
 with open(path, 'w') as f:
     json.dump(data, f, indent=2)
 "
-
-echo "[3/3] auto-sync watcher"
-if command -v systemctl >/dev/null 2>&1; then
-  mkdir -p "$HOME/.config/systemd/user"
-  cp "$REPO_DIR/systemd/sync.service" "$HOME/.config/systemd/user/antigravity-sync.service"
-  cp "$REPO_DIR/systemd/sync.path" "$HOME/.config/systemd/user/antigravity-sync.path"
-  systemctl --user daemon-reload
-  systemctl --user enable --now antigravity-sync.path
-  echo "done — all restored and auto-sync active for Antigravity"
+    log_success "Statusline successfully pointed to $STATUSLINE_SCRIPT"
 else
-  echo "systemctl not found (not on Linux), skipping systemd watcher registration."
-  echo "done — all restored (run ./sync.sh manually to push changes on macOS)"
+    log_warn "statusline-command.sh not found. Skipping statusline config."
 fi
+
+# Step 3: Register Systemd Auto-Sync Watcher
+log_info "Checking for Systemd availability..."
+if command -v systemctl >/dev/null 2>&1; then
+    SYSTEMD_DST="$HOME/.config/systemd/user"
+    mkdir -p "$SYSTEMD_DST"
+    
+    cp "$REPO_DIR/systemd/sync.service" "$SYSTEMD_DST/antigravity-sync.service"
+    cp "$REPO_DIR/systemd/sync.path" "$SYSTEMD_DST/antigravity-sync.path"
+    
+    systemctl --user daemon-reload
+    systemctl --user enable --now antigravity-sync.path
+    log_success "Systemd auto-sync watcher registered and enabled successfully."
+else
+    log_warn "systemctl not found. Auto-sync daemon registration skipped (macOS/non-systemd environment)."
+    log_info "To sync manually on macOS, execute: ./sync.sh"
+fi
+
+printf "\n${GREEN}${BOLD}Bootstrap completed successfully!${NC}\n"
