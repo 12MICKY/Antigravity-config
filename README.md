@@ -6,7 +6,7 @@ It is structured to support rapid onboarding and automated synchronization of AI
 
 ---
 
-## 🗂 Repository Layout
+## Repository Layout
 
 ```
 .
@@ -15,18 +15,7 @@ It is structured to support rapid onboarding and automated synchronization of AI
 ├── setup.sh                   # Automated, colorized bootstrap script
 ├── sync.sh                    # Bidirectional local-to-remote sync utility
 ├── statusline-command.sh      # Highly optimized TUI statusline script
-├── skills/                    # Specialized agent instruction sets (triggered by context)
-│   ├── cli/                   # TUI configs & settings schema guides
-│   ├── cmd/                   # Zsh aliases, custom CLI scripts, & PATH guides
-│   ├── data-center-engineer/  # Proxmox clusters, PBS backup, & Swarm stacks
-│   ├── designer/              # Styling guidelines, typography, & UI/UX tokens
-│   ├── game-developer/        # Unity engine templates & logic optimization
-│   ├── github/                # Git workflow, PR strategies, & CI/CD self-hosted runners
-│   ├── linux/                 # Systemd configurations & general OS utilities
-│   ├── network-engineer/      # Mikrotik CRS configs, Netwatch, & WireGuard VPNs
-│   ├── os/                    # Filesystems, diagnostics, & cross-platform configs
-│   ├── project-manager/       # Milestones, timelines, & scope breakdowns
-│   └── server/                # Production/Dev cluster separation rules
+├── skills.tar.gz              # Compressed archive containing all 800+ custom skills
 └── systemd/                   # Auto-sync path daemons (Linux environments)
     ├── sync.path
     └── sync.service
@@ -34,12 +23,12 @@ It is structured to support rapid onboarding and automated synchronization of AI
 
 ---
 
-## ⚡ Quick Start & Installation
+## Quick Start & Installation
 
 To initialize or restore this configuration on any workstation, run the colorized bootstrap script:
 
 ```bash
-git clone https://github.com/12MICKY/Antigravity-config.git ~/antigravity-config
+gh repo clone 12MICKY/Antigravity-config ~/antigravity-config
 cd ~/antigravity-config
 ./setup.sh
 ```
@@ -51,7 +40,7 @@ cd ~/antigravity-config
 
 ---
 
-## 🖥 Statusline Layout
+## Statusline Layout
 
 The terminal statusline (`statusline-command.sh`) executes on every interaction loop to present a rich, real-time context display:
 
@@ -67,7 +56,7 @@ The terminal statusline (`statusline-command.sh`) executes on every interaction 
 
 ---
 
-## 🔄 Bidirectional Auto-Sync
+## Bidirectional Auto-Sync
 
 Any configuration edits made by the agent locally in the active rule directories (e.g. `~/.agents/AGENTS.md`) are automatically synced back to this repository and pushed to GitHub.
 
@@ -79,7 +68,7 @@ Any configuration edits made by the agent locally in the active rule directories
 
 ---
 
-## 🏷 Releases & Versioning
+## Releases & Versioning
 
 - **v1.0.0 (Stable Configuration)**: Packages all 800+ community and environment-specific skills into `skills.tar.gz` for clean Git tracking and instant TUI bootstrap.
 - To publish new releases, push a new git tag (`git tag vX.Y.Z && git push origin vX.Y.Z`) and draft the release on the GitHub web portal.
