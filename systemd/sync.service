@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync AGENTS.md to GitHub for Antigravity
+
+[Service]
+Type=oneshot
+ExecStart=%h/antigravity-config/sync.sh
+StandardOutput=journal
+StandardError=journal

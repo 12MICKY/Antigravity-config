@@ -1,0 +1,36 @@
+# Memory Index
+
+- [User Profile](user_profile.md) — Thiraphat: Thai dev, Python/Node/Go/Docker, "ทำเลย" = just do it
+- [Feedback — Response Style](feedback_response_style.md) — no summaries, no recaps, action-first
+- [Feedback — Search Before Guessing](feedback_debug_search_first.md) — stuck bug? search community fix after 2-3 failed guesses
+- [Project Overview](project_overview.md) — active projects, GitHub repos, services on .34/.32
+- [BoldFit Backend on StemlabS VM](boldfit_backend_on_stemlabs_vm.md) — boldfit API+Postgres on 165.101.64.38:2222, demo/boldfit123, PAM DB auth, tunnel :8001, SSO secret for skeletondetect
+- [Bold Fit Ecosystem Desktop App](boldfit_desktop_app.md) — Flutter Linux app, in-app webcam exercise (HomeCourt-style วิดพื้น/สควอช), install paths, boldfit-tunnel.service, MediaPipe Tasks API
+- [BOLD FIT Ecosystem Roadmap](boldfit_ecosystem_roadmap.md) — school-kiosk vision, kiosk/mobile split, PLANNED-not-built: QR check-in login + gamification + leaderboard + station tag
+- [Proxmoxauto VM Bot](proxmoxauto_vm_bot.md) — Discord /promox creates Proxmox VMs (Go, LXC 200, cloud-init templates 9000-9002, free-IP scan, netsatitm)
+- [Infrastructure & Servers](infra_servers.md) — IPs, SSH pattern, Cloudflare tunnel, Swarm, runners
+- [Proxmox Cluster](proxmox_cluster.md) — 5-node PVE at 10.33.1.44 (root pw differs), CHR router VM at 10.33.1.45
+- [Snapmaker U1 Printers](snapmaker_u1_printers.md) — 2× U1 on stemlabs2.work tunnel, Moonraker API keys, X-Api-Key header
+- [Snapmaker Orca Slicer](snapmaker_orca_slicer.md) — laptop slicer = Snapmaker Orca AppImage (flatpak OrcaSlicer เด้ง webkit, ใช้ native แทน)
+- [CT 116 Cloudflare Tunnel](ct116_cloudflare_tunnel.md) — tunnel `ct116` in LXC 116 (node1) for stemlabs2.work, grafana route, systemd
+- [Workflow Patterns](workflow_patterns.md) — deploy/remove service, Swarm configs, ntopng reset, port gotchas
+- [Workflow — Infra Backup & File Storage](workflow_infra_backup.md) — node5=CRS/infra backup, .34=personal server, local=ไม่เก็บถาวร, GitHub private=doc
+- [Domain Separation](domain_separation.md) — thiraphat.work = personal only, NOT Stemlabs/CRS project
+- [CRS License Free Decision](crs_license_free_decision.md) — OPEN: CHR free (1Mbit) vs trial-autorenew vs VyOS/OPNsense migrate — user will come back to pick
+- [VPN v2 — CRS + WinBox RBAC](vpn_crs_rbac.md) — WireGuard server on CRS, admin/user by IP range, VPS=UDP forwarder :51822, mtu 1340
+- [WG Peers Metrics](wg_peers_metrics.md) — wireguard_peer_up gen by script on LXC 113 (last-handshake≤180s, was broken ICMP ping)
+- [pteachlab Server](pteachlab_server.md) — 10.33.1.33 pteachlab.com Next.js+Postgres(geniuslab_auth), sudo pw Yaimakmak1234, empty-env login bug
+- [VM 120 pteachlab (node5)](vm120_pteachlab_node5.md) — Proxmox VM, Ubuntu 24.04, static 10.33.1.27 on Chula LAN (vmbr0), user/pw pteachlab, NO internet (captive portal)
+- [genius-lab on VM120](genius_lab_on_vm120.md) — pteach-lab Next.js 16 app, PM2 + local Postgres on 10.33.1.27:3000, admin/CSRF/db creds
+- [Personal VPN](personal_vpn.md) — own VPS 165.101.64.45 wg hub, home(10.10.10.0/24)↔Chula(.34 only), laptop NM conn `home`, ~4ms; home pve peer TODO
+- [CRS Features Configured](crs_features.md) — Netwatch, NTP server, SNMP→Prometheus, weekly backup, nginx redirects, DNS priority fix
+- [stemlabs-vps VM 102](stemlabs_vps_vm.md) — VM uses VPS public IP 165.101.64.38, SSH :2222, dual wg tunnel on VPS (wg0=VM/wg1=CRS), capacity Q pending
+- [Satit-M Fortinet / CRS access](satit_m_fortinet_crs_access.md) — ที่ทำงานเน็ต Fortinet บล็อก VPN/tunnel ทุกแบบ; เข้า CRS ด้วย `ssh -N crs-tunnel` (plain SSH ผ่าน VPS host)
+- [Host .39 VMware VM](host_39_vmware.md) — 10.33.1.39 VMware VM @Satit-M, wiped to clean Ubuntu + stemlab/Yaimakmak8888, no internet (Fortinet MITM)
+- [VM102 StemlabS Postgres](vm102_stemlabs_postgres.md) — 10.33.1.24 lab server, native PG14 + PAM auth (lab users login w/ own Linux user/pw), per-user db + shared stemlabs
+- [PBS CT104](pbs_ct104.md) — Proxmox Backup Server on node3, 1TB sdb datastore (ex-osd.0), cluster target pbs-node3, daily 19:00 + GC/verify/prune set
+- [Hypervisor 172.16.0.20](hypervisor_172_16_0_20.md) — 2nd workplace Proxmox (PrintFarm/StemLabs), reach via Mac jump host + laptop systemd tunnel localhost:18006; TS/VPN blocked (Fortinet + 10.33.1.0/24 overlap)
+- [Map Pins App](map_pins_app.md) — map.thiraphat.work shared Leaflet+Node pin map on .34:18091, GPS + photo/text, data volume map-pins-data
+- [Bold Fit Repo Notifier](boldfit_repo_notifier.md) — Discord bot in K3s ns apps on .34: commit(main+hirax)/release/PR/issue/comment alerts for 7 boldfit repos, 5min poll
+- [.34 K8s-only Policy](policy_34_k8s_only.md) — no raw docker services on .34; everything in K3s, registry 10.33.1.34:5000, manifests ~/k3s-manifests/apps
+- [Deploy CT107 cudstemlab2](deploy_ct107_cudstemlab2.md) — Next.js standalone deploy to CT107: ต้อง rm -rf .next/static public ก่อน cp ไม่งั้น static/static/ nesting → JS 404

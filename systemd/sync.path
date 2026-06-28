@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch AGENTS.md and statusline for Antigravity changes
+
+[Path]
+PathModified=%h/.agents/AGENTS.md
+PathModified=%h/antigravity-config/statusline-command.sh
+Unit=antigravity-sync.service
+
+[Install]
+WantedBy=default.target
