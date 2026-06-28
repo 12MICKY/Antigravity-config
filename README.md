@@ -1,21 +1,42 @@
-# Antigravity Config (`antigravity-config`)
+# Google Antigravity Configuration Environment
 
-This repository houses the configuration, memory, system instructions, and custom TUI statusline utilities for **Google Antigravity (`agy`)** in Thiraphat's development environment.
+This repository houses the rules, profiles, custom domain skills, and terminal statusline configuration for **Google Antigravity (`agy`)** in Thiraphat's development environment.
 
-## Repository Structure
-
-- **`AGENTS.md`**: Custom workspace rules containing environment profiles, identity constraints, technical coding styles, and behavior directives.
-- **`statusline-command.sh`**: A highly optimized terminal status line script designed for the `agy` CLI that outputs user/host, model, active repository, git branch, context usage percentage, and weekly credit quota.
-- **`setup.sh`**: Single-command setup helper script that symlinks rules and configures `settings.json`.
-- **`sync.sh`**: Daemon-friendly auto-sync script to commit and push changes back to GitHub.
-- **`memory/`**: Workspace memory catalog mapping servers, virtualization hosts (Proxmox/ESXi), project specifications (BoldFit, genius-lab, etc.), networks, and workflows.
-- **`systemd/`**: Path-watcher configurations for automated rule/script synchronization (Linux environment).
+It is structured to support rapid onboarding and automated synchronization of AI guidelines, project scopes, and context boundaries.
 
 ---
 
-## Setup & Installation
+## 🗂 Repository Layout
 
-To deploy this configuration on a new workstation or restore the environment, clone this repository locally and run the setup script:
+```
+.
+├── AGENTS.md                  # Custom agent behavioral rules & active project scopes
+├── README.md                  # Repository documentation
+├── setup.sh                   # Automated, colorized bootstrap script
+├── sync.sh                    # Bidirectional local-to-remote sync utility
+├── statusline-command.sh      # Highly optimized TUI statusline script
+├── skills/                    # Specialized agent instruction sets (triggered by context)
+│   ├── cli/                   # TUI configs & settings schema guides
+│   ├── cmd/                   # Zsh aliases, custom CLI scripts, & PATH guides
+│   ├── data-center-engineer/  # Proxmox clusters, PBS backup, & Swarm stacks
+│   ├── designer/              # Styling guidelines, typography, & UI/UX tokens
+│   ├── game-developer/        # Unity engine templates & logic optimization
+│   ├── github/                # Git workflow, PR strategies, & CI/CD self-hosted runners
+│   ├── linux/                 # Systemd configurations & general OS utilities
+│   ├── network-engineer/      # Mikrotik CRS configs, Netwatch, & WireGuard VPNs
+│   ├── os/                    # Filesystems, diagnostics, & cross-platform configs
+│   ├── project-manager/       # Milestones, timelines, & scope breakdowns
+│   └── server/                # Production/Dev cluster separation rules
+└── systemd/                   # Auto-sync path daemons (Linux environments)
+    ├── sync.path
+    └── sync.service
+```
+
+---
+
+## ⚡ Quick Start & Installation
+
+To initialize or restore this configuration on any workstation, run the colorized bootstrap script:
 
 ```bash
 git clone https://github.com/12MICKY/Antigravity-config.git ~/antigravity-config
@@ -23,29 +44,35 @@ cd ~/antigravity-config
 ./setup.sh
 ```
 
-### What `setup.sh` does:
-1. Installs the environment rules to `~/.agents/AGENTS.md` for workspace auto-discovery.
-2. Updates `~/.gemini/antigravity-cli/settings.json` to enable and link the custom statusline.
-3. Registers and starts the user-level path watcher daemon (`systemd` - Linux only).
+### Bootstrap Process:
+1. **Instruction Syncing**: Registers rules to `~/.agents/AGENTS.md` and copies domain-specific skills to `~/.agents/skills/` for context-aware loading.
+2. **TUI Interface Setup**: Automates configuration of `~/.gemini/antigravity-cli/settings.json` to link the custom statusline.
+3. **Daemon Registration**: Installs and starts the user-level file monitor watcher (via `systemd` if running on Linux).
 
 ---
 
-## Statusline Layout
+## 🖥 Statusline Layout
 
-The custom statusline runs on every CLI action loop. It outputs:
+The terminal statusline (`statusline-command.sh`) executes on every interaction loop to present a rich, real-time context display:
 
 `thiraphatsrichit@MacBook-Air-khxng-Thiraphat ❯ Gemini 3.5 Flash (Medium) ❯ antigravity-config main ❯ 5h:█░░░░░░░░░11% ❯ 7d:█░░░░░░░░░12% ❯ 🅰:█░░░░░░░░░12% ❯ 22:05`
 
-### Component Breakdown:
-- **Host & User**: Current local context user/hostname.
-- **Model**: Displays active Gemini model in use.
-- **Repository / Project**: Active repository name or working directory.
-- **Git Branch**: Displays current git branch.
-- **`5h:` (Context Usage)**: Visual progress bar representing the current chat context usage percentage (mapped to avoid CLI constraints).
-- **`7d:` & `🅰:` (Weekly Quota)**: Displays the weekly remaining token quota for the currently selected model.
+### Components:
+- **Host Context**: Renders `user@hostname`.
+- **Active Model**: Dynamically lists the active LLM engine.
+- **Active Repository**: Active directory/repo name.
+- **Branch status**: Live Git branch tracker.
+- **`5h:` (Context Window)**: Shows the current session's token consumption in the context window.
+- **`7d:` & `🅰:` (Weekly Quota)**: Shows the weekly token quota utilization for the active model.
 
 ---
 
-## Auto-Sync (Linux Servers only)
+## 🔄 Bidirectional Auto-Sync
 
-Any local changes made by the agent to rules (`~/.agents/AGENTS.md`) or the statusline script will be automatically staged, committed, and pushed back to this GitHub repository. This is powered by user-level systemd path units (`sync.path` + `sync.service`).
+Any configuration edits made by the agent locally in the active rule directories (e.g. `~/.agents/AGENTS.md`) are automatically synced back to this repository and pushed to GitHub.
+
+- **Linux**: Handled transparently by the `antigravity-sync` systemd user path-unit.
+- **macOS / Manual**: Sync and push updates at any time by executing:
+  ```bash
+  ./sync.sh
+  ```
