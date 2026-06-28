@@ -54,10 +54,10 @@ else
     exit 1
 fi
 
-if [ -d "$REPO_DIR/skills" ]; then
+if [ -f "$REPO_DIR/skills.tar.gz" ]; then
     rm -rf "$AGENTS_DST/skills"
-    cp -R "$REPO_DIR/skills" "$AGENTS_DST/"
-    log_success "Custom skills synchronized to $AGENTS_DST/skills"
+    tar -xzf "$REPO_DIR/skills.tar.gz" -C "$AGENTS_DST/"
+    log_success "Custom skills unpacked and synchronized to $AGENTS_DST/skills"
 fi
 
 # Step 2: Configure TUI Statusline

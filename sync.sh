@@ -41,12 +41,11 @@ else
     log_warn "Local AGENTS.md rules not found at $AGENTS_SRC"
 fi
 
-# Copy skills back to repo
+# Archive skills folder to a single compressed tarball
 if [ -d "$SKILLS_SRC" ]; then
-    mkdir -p "$REPO_DIR/skills"
-    # Sync skills directory excluding temp files
-    rsync -a --delete --exclude '.*' "$SKILLS_SRC/" "$REPO_DIR/skills/"
-    log_success "Synchronized custom skills back to repository."
+    log_info "Archiving custom skills to skills.tar.gz..."
+    tar -czf "$REPO_DIR/skills.tar.gz" -C "$HOME/.agents" skills
+    log_success "Synchronized custom skills back to repository as skills.tar.gz"
 fi
 
 # Commit and Push
