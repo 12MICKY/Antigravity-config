@@ -44,7 +44,7 @@ cd ~/antigravity-config
 
 The terminal statusline (`statusline-command.sh`) executes on every interaction loop to present a rich, real-time context display:
 
-`thiraphatsrichit@MacBook-Air-khxng-Thiraphat ❯ Gemini 3.5 Flash (Medium) ❯ antigravity-config main ❯ 5h:█░░░░░░░░░11% ❯ 7d:█░░░░░░░░░12% ❯ 🅰:█░░░░░░░░░12% ❯ 22:05`
+`thiraphatsrichit@MacBook-Air-khxng-Thiraphat ❯ Gemini 3.5 Flash (Medium) ❯ antigravity-config main ❯ 5h:█░░░░░░░░░11% ❯ 7d:█░░░░░░░░░12% ❯ A:█░░░░░░░░░12% ❯ 22:05`
 
 ### Components:
 - **Host Context**: Renders `user@hostname`.
@@ -52,7 +52,7 @@ The terminal statusline (`statusline-command.sh`) executes on every interaction 
 - **Active Repository**: Active directory/repo name.
 - **Branch status**: Live Git branch tracker.
 - **`5h:` (Context Window)**: Shows the current session's token consumption in the context window.
-- **`7d:` & `🅰:` (Weekly Quota)**: Shows the weekly token quota utilization for the active model.
+- **`7d:` & `A:` (Weekly Quota)**: Shows the weekly token quota utilization for the active model.
 
 ---
 
@@ -65,6 +65,21 @@ Any configuration edits made by the agent locally in the active rule directories
   ```bash
   ./sync.sh
   ```
+
+---
+
+## Integrated Skill Libraries
+
+This configuration integrates several custom and community-developed skill libraries to enhance the agent's capabilities:
+
+- **Core Homelab & Network Configuration**: Local domain blueprints for Proxmox, Mikrotik routing, PBS, and K3s.
+- **12MICKY Personal Skills**: Extracted and compiled from the `12MICKY/claude-skills` repository, providing local workflow optimization and developer context.
+- **Context Engineering**: Cloned from `muratcankoylan/Agent-Skills-for-Context-Engineering`.
+- **General Claude Skills**: Cloned from `alirezarezvani/claude-skills`.
+- **Reverse Engineering**: Cloned from `meirm/reverse-engineering-skill`.
+- **Network Automation**: Cloned from `arsallls/claude-network-skills`.
+
+All skills are compiled and packaged directly inside the compressed `skills.tar.gz` archive to optimize memory footprints and speed up repository transactions.
 
 ---
 
