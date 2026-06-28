@@ -1,23 +1,55 @@
 ---
 name: network-engineer
-description: Guidelines and references for managing network infrastructure, Mikrotik CRS configs, WireGuard VPNs, Fortinet plain SSH bypass, and router diagnostics.
+description: Hardcore reference guidelines and blueprint topologies for Thiraphat's multi-site VPN, VLANs, Cloudflare tunnels, and Mikrotik routing.
 ---
-# Network Engineer Skill
+# Hardcore Network Engineering & Topology Blueprint
 
-Instructions for configuring and troubleshooting the local and remote network infrastructure:
-- **Mikrotik CRS Configs**: Router VM is at 10.33.1.45. Reachable via WinBox/SSH. Use plain configuration styles, netwatch, NTP servers, and SNMP diagnostics.
-- **WireGuard VPN**: wireguard_peer_up checker runs on LXC 113. MTU should be set to 1340. Admin/user separation by IP ranges.
-- **Fortinet Bypass (SSH Tunneling)**: Plain SSH tunnel via VPS host (`ssh -N crs-tunnel`). Fortinet blocks standard VPNs.
-- **Diagnostics**: Prioritize Netwatch alerts, verify status using WireGuard handshake logs, and check network paths using plain ping/traceroute tools.
+This reference skill defines the actual routing, VPN topologies, and server mappings for Thiraphat's infrastructure.
 
-## VPN & Network Design Guidelines (Hardcore Topology)
+---
 
-### 1. VLAN Segmentation & Routing Design
-- **Subnet Allocation**: Keep clear segregation between Management, Production/K3s, and Client VPN subnets.
-- **Inter-VLAN Routing**: Define routing policies on the central Mikrotik switch (or CHR VM). Secure control planes via L3 firewall rules rather than flat VLANs.
-- **Dynamic Routing**: Use lightweight OSPF routes for site-to-site VPN networks to automate path redirection on link failover.
+## 1. Network Infrastructure & Server IP Map
 
-### 2. Multi-Tiered VPN Topology
-- **Hub-and-Spoke Topology**: Centralize VPN access on the public VPS Host (`165.101.64.45`) acting as the WireGuard hub. Route remote branches (home, lab, client nodes) through this central relay.
-- **Site-to-Site WireGuard Tunnels**: Ensure site connections use persistent-keepalive (e.g. 25s) to maintain NAT hole punching. Enforce strict MTU values of `1340` on all tunnel virtual interfaces to avoid packet fragmentation over standard WAN routes.
-- **Plain SSH Tunneling Fallback**: For environments restricted by deep packet inspection (DPI) or MITM firewalls (such as Fortinet environments), bypass VPN restrictions using reverse SSH port forwarding routed through a public VPS jump host (`ssh -N -R <port>:localhost:22`).
+| Node / Host | IP Address | Subnet / VLAN | Role | Notes |
+|---|---|---|---|---|
+| **prod-server** | `10.33.1.34` | VLAN 10 (Prod) | K3s CP / CF Tunnel Host | Registry :5000, map-pins :18091 |
+| **dev-server** | `10.33.1.32` | VLAN 10 (Prod) | K3s Worker / Playgrounds | Untested builds, experiments |
+| **pteachlab** | `10.33.1.33` | VLAN 10 (Prod) | Web/DB (pteachlab.com) | Next.js, PG, pw: `Yaimakmak1234` |
+| **node5 (VM120)** | `10.33.1.27` | Chula LAN (vmbr0) | genius-lab-nextjs2 Host | PM2, PG, NO internet (captive portal) |
+| **VM 102 (Lab)** | `10.33.1.24` | VLAN 10 (Prod) | Native Postgres (PG14) | PAM authentication (Linux users) |
+| **PVE Cluster** | `10.33.1.44` | VLAN 10 (Prod) | 5-node Proxmox VE | Virtualization Control Plane |
+| **CHR VM** | `10.33.1.45` | VLAN 10 (Prod) | Mikrotik CRS / Router VM | Core routing and gateway |
+| **stemlabs-vps**| `165.101.64.38`| Public (SSH :2222) | BoldFit Backend Host | API+PG :8001, PAM, SSH tunnel |
+| **personal-vps**| `165.101.64.45`| Public (wg hub) | WG Hub / UDP forwarder | Port :51822 |
+
+---
+
+## 2. Multi-Tiered VPN & Tunnel Architecture
+
+### A. WireGuard Hub Topology
+- **Hub VPS**: `165.101.64.45:51822` (UDP forwarder)
+- **Tunnels**:
+  - `wg0`: Connects public `stemlabs-vps` (VM 102) to the VPS.
+  - `wg1`: Connects local Mikrotik CRS to the VPS.
+- **Routing**: Tunnel packets are routed between Home LAN (`10.10.10.0/24`) and Chula LAN (`10.33.1.0/24` via `.34` gateway) with latency ~4ms.
+- **Strict MTU**: WireGuard virtual interfaces MUST use `MTU 1340` to avoid WAN fragmentation.
+
+### B. Cloudflare Tunnel (K3s HA)
+- **Tunnel ID**: `51f79d1f-24e5-4e2a-a1e4-c56b21d96bd2`
+- **Kubernetes Deployment**: Runs in namespace `apps` with **2 replicas** split across `.34` and `.32` (HA setup).
+- **Configuration**: Managed via **ConfigMap `cloudflared-config`** and **Secret `cloudflared-credentials`** (manifest at `~/k3s-manifests/apps/cloudflared.yaml`).
+- **Registration**: To add a new public service on `*.thiraphat.work`:
+  1. Execute: `~/k3s-manifests/apps/cloudflared-add-service.sh <hostname>` (updates DNS + ConfigMap + restarts deployment).
+  2. Create the Traefik `IngressRoute` pointing to the service.
+
+### C. Fortinet DPI Plain SSH Bypass (Workplace Tunnel)
+- **Problem**: Workplace network uses Fortinet which blocks all WireGuard/Tailscale VPN handshakes.
+- **Solution**: Establish a plain SSH port-forwarding loop to the public VPS host:
+  `ssh -N crs-tunnel`
+  This routes traffic out of the restricted workplace through SSH port `22` (typically open) to access WinBox and PVE web panels.
+
+### D. Moonraker Printer Tunnels (Snapmaker U1)
+- **Hosts**: 2× Snapmaker U1 3D Printers.
+- **Auth**: Authenticate via `X-Api-Key` headers.
+- **trusted_clients**: Ensure `100.64.0.0/10` is added to `moonraker.conf` to prevent AppImage/Flatpak OrcaSlicer connection drops.
+- **LXC 116 (node1)**: Runs `ct116` tunnel for `stemlabs2.work` Grafana monitoring route.
